@@ -2,6 +2,7 @@ package com.example.chessapp.pieces
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.unit.IntOffset
+import com.example.chessapp.R
 import com.example.chessapp.board.Board
 
 class Bishop(
@@ -11,13 +12,13 @@ class Bishop(
 
     override val type: PieceType = PieceType.B
 
-    override val drawable: DrawableRes =
+    override val drawable: Int =
         if(color.isWhite){
-            TODO("Res.drawable.bishop_white")
+            R.drawable.bishopwhite
 
         }
         else{
-            TODO("Res.drawable.bishop_black")
+           R.drawable.bishopblack
         }
 
 

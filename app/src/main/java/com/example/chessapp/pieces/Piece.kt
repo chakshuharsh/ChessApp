@@ -19,14 +19,14 @@ enum class Color {
 
 
 interface Piece {
-    val color: Color
+    val color: Color  // obsolete
 //    val type:PieceType
 
     var position: IntOffset
 
     val type: PieceType
 
-    val drawable: DrawableRes
+    val drawable: Int
     fun getAvailableMoves( pieces: List<Piece>): Set<IntOffset>
 
     fun encode(): String {

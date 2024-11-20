@@ -28,6 +28,25 @@ fun rememberBoard(
         Board(encodedPieces = encodedPieces)
     }
 
+
+@Composable
+fun Board.rememberPieceAt(x: Int, y: Int): Piece? =
+    remember(x, y, moveIncrement) {
+        getPiece(
+            x = x,
+            y = y,
+        )
+    }
+
+@Composable
+fun Board.rememberIsAvailableMove(x: Int, y: Int): Boolean =
+    remember(x, y, selectedPieceMoves) {
+        isAvailableMove(
+            x = x,
+            y = y,
+        )
+    }
+
 @Immutable
 class Board(
     encodedPieces: String = InitialEncodedPiecesPosition,
@@ -68,6 +87,13 @@ class Board(
         }
     }
 
+
+    private fun clearSelection() {
+        selectedPiece = null
+        selectedPieceMoves.value = emptySet()
+    }
+
+
     fun moveSelectedPiece(x: Int, y: Int) {
         selectedPiece?.let { piece ->
             if (!isAvailableMove(x = x, y = y))
@@ -96,8 +122,13 @@ class Board(
     fun getPiece(x: Int, y: Int): Piece? =
         _pieces.find { it.position.x == x && it.position.y == y }
 
-    fun isAvailableMove(x: Int, y: Int): Boolean =
-        selectedPieceMoves.any { it.x == x && it.y == y }
+    fun isAvailableMove(x: Int, y: Int): Boolean {
+
+        // find coordinates in selected moves which matches with x and y
+
+        return false
+    }
+
 
     fun save() {
         val encodedBoard = encode()
@@ -127,10 +158,6 @@ class Board(
     }
 
 
-    private fun clearSelection() {
-        selectedPiece = null
-        selectedPieceMoves = emptySet()
-    }
 
     private fun switchPlayerTurn() {
         playerTurn =
@@ -149,20 +176,4 @@ class Board(
     }
 }
 
-@Composable
-fun Board.rememberPieceAt(x: Int, y: Int): Piece? =
-    remember(x, y, moveIncrement) {
-        getPiece(
-            x = x,
-            y = y,
-        )
-    }
 
-@Composable
-fun Board.rememberIsAvailableMove(x: Int, y: Int): Boolean =
-    remember(x, y, selectedPieceMoves) {
-        isAvailableMove(
-            x = x,
-            y = y,
-        )
-    }

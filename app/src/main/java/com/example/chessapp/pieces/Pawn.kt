@@ -2,6 +2,7 @@ package com.example.chessapp.pieces
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.unit.IntOffset
+import com.example.chessapp.R
 import com.example.chessapp.board.Board
 
 class Pawn(
@@ -14,13 +15,13 @@ class Pawn(
     override val type: PieceType = PieceType.P
 
 
-    override val drawable: DrawableRes =
+    override val drawable =
         if(color.isWhite){
-            TODO("Res.drawable.pawn_white")
+          R.drawable.pawnwhite
 
         }
         else{
-            TODO("Res.drawable.pawn_black")
+            R.drawable.pawnblack
         }
 
     override fun getAvailableMoves(pieces:List<Piece>): Set<IntOffset> {

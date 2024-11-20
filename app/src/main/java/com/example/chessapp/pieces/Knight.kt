@@ -2,6 +2,7 @@ package com.example.chessapp.pieces
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.unit.IntOffset
+import com.example.chessapp.R
 import com.example.chessapp.board.Board
 
 class Knight(
@@ -11,14 +12,13 @@ class Knight(
     override val type:PieceType = PieceType.N
 
 
-    override val drawable: DrawableRes =
+    override val drawable =
         if(color.isWhite){
-            TODO("Res.drawable.knight_white")
+            R.drawable.knightwhite
 
         }
         else{
-            TODO("Res.drawable.knight_black")
-        }
+            R.drawable.knightblack        }
 
 
     override fun getAvailableMoves( pieces:List<Piece>): Set<IntOffset> {
