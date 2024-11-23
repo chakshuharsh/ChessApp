@@ -1,11 +1,5 @@
 package com.example.chessapp.board
-
-
-
-
-
-
-
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -24,9 +18,9 @@ import com.example.chessapp.pieces.Piece
 fun rememberBoard(
     encodedPieces: String = InitialEncodedPiecesPosition,
 ): Board =
-    remember {
-        Board(encodedPieces = encodedPieces)
-    }
+        remember {
+           Board(encodedPieces = encodedPieces)
+        }
 
 
 @Composable
@@ -63,10 +57,10 @@ class Board(
     var selectedPiece by mutableStateOf<Piece?>(null)
         private set
 
-    var selectedPieceMoves = mutableStateOf(emptySet<IntOffset>())
+    var selectedPieceMoves by mutableStateOf(emptySet<IntOffset>())
         private set
 
-    var moveIncrement = mutableIntStateOf(0)
+    var moveIncrement by mutableIntStateOf(0)
         private set
 
     var playerTurn by mutableStateOf<Color>(Color.W)
@@ -83,14 +77,14 @@ class Board(
             clearSelection()
         } else {
             selectedPiece = piece
-            selectedPieceMoves.value = piece.getAvailableMoves(pieces = pieces)
+            selectedPieceMoves = piece.getAvailableMoves(pieces = pieces)
         }
     }
 
 
     private fun clearSelection() {
         selectedPiece = null
-        selectedPieceMoves.value = emptySet()
+        selectedPieceMoves = emptySet()
     }
 
 
@@ -123,18 +117,13 @@ class Board(
         _pieces.find { it.position.x == x && it.position.y == y }
 
     fun isAvailableMove(x: Int, y: Int): Boolean {
-
-        // find coordinates in selected moves which matches with x and y
-
-        return false
+        return selectedPieceMoves.any { it.x == x && it.y == y }
     }
 
 
     fun save() {
         val encodedBoard = encode()
-        val millis = Clock.System.now().toEpochMilliseconds()
-
-        boardSettings[BoardKeyPrefix + millis] = encodedBoard
+ 
     }
 
     /**
@@ -160,11 +149,8 @@ class Board(
 
 
     private fun switchPlayerTurn() {
-        playerTurn =
-            if (playerTurn.isWhite)
-                Piece.Color.Black
-            else
-                Piece.Color.White
+        playerTurn = if (playerTurn == Color.W) Color.B else Color.W
+
     }
 
     private fun encode(): String {
