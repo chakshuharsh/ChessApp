@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.ui.unit.IntOffset
 import com.example.chessapp.R
 import com.example.chessapp.board.Board
+import com.example.chessapp.pieces.commonMoveHelper.getStraightMoves
 
 class Queen(
     override val color:Color,
@@ -19,11 +20,13 @@ class Queen(
 
         }
         else{
-            R.drawable.queenblack        }
+            R.drawable.queenblack
+        }
 
-    override fun getAvailableMoves( pieces:List<Piece>): Set<IntOffset> {
+    override fun getAvailableMoves( piece:Piece,pieces:List<Piece>): MutableSet<IntOffset> {
         val moves = mutableSetOf<IntOffset>()
 
+        moves .addAll(getStraightMoves(piece, pieces))
 
         return moves
     }

@@ -27,7 +27,7 @@ interface Piece {
     val type: PieceType
 
     val drawable: Int
-    fun getAvailableMoves( pieces: List<Piece>): Set<IntOffset>
+    fun getAvailableMoves( piece:Piece,pieces: List<Piece>): Set<IntOffset>
 
     fun encode(): String {
         // W, B

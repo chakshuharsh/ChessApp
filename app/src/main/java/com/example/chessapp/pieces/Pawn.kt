@@ -24,7 +24,7 @@ class Pawn(
             R.drawable.pawnblack
         }
 
-    override fun getAvailableMoves(pieces:List<Piece>): Set<IntOffset> {
+    override fun getAvailableMoves(piece:Piece,pieces:List<Piece>): Set<IntOffset> {
 
         val moves = mutableSetOf<IntOffset>()
         val direction = if(color.isWhite) 1 else -1
@@ -56,11 +56,6 @@ class Pawn(
         if(isFirstMove && (nextPieceForFirstMove == null) && (nextPiece == null)){
             moves.add(nextPositionForFirstMove)
         }
-
-
-
-
-
 
         return moves
     }

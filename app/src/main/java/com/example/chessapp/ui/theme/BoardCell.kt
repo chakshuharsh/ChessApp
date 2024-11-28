@@ -124,6 +124,7 @@ fun BoardCell(
                         indication = null,
                     ) {
                         board.moveSelectedPiece(x, y)
+                        Log.d("black queen moves", "${board.selectedPieceMoves}")
                     }
                     .drawBehind {
                         drawCircle(

@@ -22,7 +22,7 @@ class Bishop(
         }
 
 
-    override fun getAvailableMoves(pieces:List<Piece>): Set<IntOffset> {
+    override fun getAvailableMoves(piece:Piece,pieces:List<Piece>): Set<IntOffset> {
 
         val moves = mutableSetOf<IntOffset>()
 

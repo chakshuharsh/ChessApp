@@ -77,7 +77,7 @@ class Board(
             clearSelection()
         } else {
             selectedPiece = piece
-            selectedPieceMoves = piece.getAvailableMoves(pieces = pieces)
+            selectedPieceMoves = piece.getAvailableMoves(piece,pieces)
         }
     }
 
