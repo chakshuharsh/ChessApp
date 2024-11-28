@@ -1,9 +1,7 @@
 package com.example.chessapp.pieces
 
-import androidx.annotation.DrawableRes
 import androidx.compose.ui.unit.IntOffset
 import com.example.chessapp.R
-import com.example.chessapp.board.Board
 
 class Pawn(
     override val color:Color,
@@ -55,6 +53,48 @@ class Pawn(
 
         if(isFirstMove && (nextPieceForFirstMove == null) && (nextPiece == null)){
             moves.add(nextPositionForFirstMove)
+        }
+
+        if(piece.color == Color.W){
+           val targetPosition1 = IntOffset(
+               x = position.x+1,
+               y = position.y+1,
+           )
+
+            val targetPosition2 = IntOffset(
+                x = position.x-1,
+                y = position.y+1,
+            )
+
+            val targetPiece1 = pieces.find{(it.position == targetPosition1)}
+            val targetPiece2 = pieces.find{(it.position == targetPosition2)}
+            if(targetPiece2 !=null){
+            moves.add(targetPosition2)
+            }
+            if(targetPiece1 !=null){
+                moves.add(targetPosition1)
+            }
+        }
+
+        if(piece.color == Color.B){
+            val targetPosition1 = IntOffset(
+                x = position.x+1,
+                y = position.y-1,
+            )
+
+            val targetPosition2 = IntOffset(
+                x = position.x-1,
+                y = position.y-1,
+            )
+
+            val leftTargetPiece = pieces.find{(it.position == targetPosition1)}
+            val rightTargetPiece = pieces.find{(it.position == targetPosition2)}
+            if(rightTargetPiece !=null){
+                moves.add(targetPosition2)
+            }
+            if(leftTargetPiece !=null){
+                moves.add(targetPosition1)
+            }
         }
 
         return moves
