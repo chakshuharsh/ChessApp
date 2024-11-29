@@ -20,9 +20,9 @@ fun GameScreen(){
             .fillMaxSize()
             .background(color = Color.Yellow)
     )
-             {
-            val initialEncodedPosition = InitialEncodedPiecesPosition
-            val board = rememberBoard(initialEncodedPosition)
-            BoardUI(board,modifier = Modifier)
-        }
+    {
+        val initialEncodedPosition = InitialEncodedPiecesPosition
+        val board = rememberBoard(initialEncodedPosition)
+        BoardUI(board,modifier = Modifier)
+    }
 }

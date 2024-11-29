@@ -18,9 +18,9 @@ import com.example.chessapp.pieces.Piece
 fun rememberBoard(
     encodedPieces: String = InitialEncodedPiecesPosition,
 ): Board =
-        remember {
-           Board(encodedPieces = encodedPieces)
-        }
+    remember {
+        Board(encodedPieces = encodedPieces)
+    }
 
 
 @Composable
@@ -77,7 +77,7 @@ class Board(
             clearSelection()
         } else {
             selectedPiece = piece
-            selectedPieceMoves = piece.getAvailableMoves(pieces = pieces)
+            selectedPieceMoves = piece.getAvailableMoves(piece,pieces)
         }
     }
 
@@ -123,7 +123,7 @@ class Board(
 
     fun save() {
         val encodedBoard = encode()
- 
+
     }
 
     /**
@@ -161,5 +161,4 @@ class Board(
         const val BoardKeyPrefix = "board_"
     }
 }
-
 

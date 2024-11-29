@@ -1,6 +1,8 @@
 package com.example.chessapp.pieces
 
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.unit.IntOffset
+import com.example.chessapp.board.Board
 import com.example.chessapp.board.BoardXCoordinates
 import com.example.chessapp.board.BoardYCoordinates
 
@@ -25,7 +27,7 @@ interface Piece {
     val type: PieceType
 
     val drawable: Int
-    fun getAvailableMoves( pieces: List<Piece>): Set<IntOffset>
+    fun getAvailableMoves( piece:Piece,pieces: List<Piece>): Set<IntOffset>
 
     fun encode(): String {
         // W, B
@@ -41,14 +43,14 @@ interface Piece {
     }
 
 
-    companion object {  // encoded String format =  PW01 -> type, color, x, y
+    companion object {  // encoded String formart =  PW01 -> type, color, x, y
         fun decode(encodedPiece: String): Piece {
 
 
             val _pieceColor = encodedPiece[1]
 
             var pieceColor = Color.W
-                pieceColor = if (_pieceColor == 'W') {
+            pieceColor = if (_pieceColor == 'W') {
                 Color.W
             } else {
                 Color.B
@@ -59,7 +61,7 @@ interface Piece {
                 y = encodedPiece[3].digitToInt() + BoardYCoordinates.min()
             )
 
-             return when (encodedPiece[0].toChar()) {
+            return when (encodedPiece[0].toChar()) {
                 'P' -> Pawn(pieceColor, position)
 
                 'K' -> King(pieceColor, position)

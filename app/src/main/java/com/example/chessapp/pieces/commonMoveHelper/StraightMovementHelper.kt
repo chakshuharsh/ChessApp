@@ -234,6 +234,3 @@ fun getRightHorizontalMoves(color:Color,x:Int,y:Int,pieceClosestToSelectedPieceI
 
     return rightHorizontalMoves
 }
-
-
-

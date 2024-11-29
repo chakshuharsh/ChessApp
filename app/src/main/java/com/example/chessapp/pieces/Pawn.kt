@@ -17,14 +17,14 @@ class Pawn(
 
     override val drawable =
         if(color.isWhite){
-          R.drawable.pawnwhite
+            R.drawable.pawnwhite
 
         }
         else{
             R.drawable.pawnblack
         }
 
-    override fun getAvailableMoves(pieces:List<Piece>): Set<IntOffset> {
+    override fun getAvailableMoves(piece:Piece,pieces:List<Piece>): Set<IntOffset> {
 
         val moves = mutableSetOf<IntOffset>()
         val direction = if(color.isWhite) 1 else -1

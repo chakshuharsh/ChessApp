@@ -52,19 +52,19 @@ fun BoardUI(
                             val piece = board.rememberPieceAt(x, y)
                             val isAvailableMove = remember{mutableStateOf(false)}
 
-                             isAvailableMove.value =
+                            isAvailableMove.value =
                                 board.rememberIsAvailableMove(x, y)
 
-                                BoardCell(
-                                    board,
-                                    piece,
-                                    x,
-                                    y,
-                                    isAvailableMove,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight()
-                                )
+                            BoardCell(
+                                board,
+                                piece,
+                                x,
+                                y,
+                                isAvailableMove,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            )
 
                         }
 
