@@ -68,10 +68,10 @@ class Pawn(
 
             val targetPiece1 = pieces.find{(it.position == targetPosition1)}
             val targetPiece2 = pieces.find{(it.position == targetPosition2)}
-            if(targetPiece2 !=null){
+            if(targetPiece2 !=null && targetPiece2.color != piece.color){
             moves.add(targetPosition2)
             }
-            if(targetPiece1 !=null){
+            if(targetPiece1 !=null && targetPiece1.color != piece.color){
                 moves.add(targetPosition1)
             }
         }
@@ -89,10 +89,10 @@ class Pawn(
 
             val leftTargetPiece = pieces.find{(it.position == targetPosition1)}
             val rightTargetPiece = pieces.find{(it.position == targetPosition2)}
-            if(rightTargetPiece !=null){
+            if(rightTargetPiece !=null && rightTargetPiece.color != piece.color){
                 moves.add(targetPosition2)
             }
-            if(leftTargetPiece !=null){
+            if(leftTargetPiece !=null && leftTargetPiece.color != piece.color){
                 moves.add(targetPosition1)
             }
         }
