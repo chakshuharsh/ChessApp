@@ -201,7 +201,7 @@ fun Piece.getLeftUpperDiagonalMoves(
 
 
 
-    if(pieceClosestToSelectedPieceInLeftUp == null){
+    if(pieceClosestToSelectedPieceInLeftUp == null || pieceClosestToSelectedPieceInLeftUp.color != color){
 
         while(i>=66 && j<=7){
             i -= 1
@@ -210,19 +210,13 @@ fun Piece.getLeftUpperDiagonalMoves(
             upperLeftMoves.add(IntOffset(i, j))
         } // 68>66 && 0<
     }else{
-        if(pieceClosestToSelectedPieceInLeftUp.color == color){
+
             while(i>pieceClosestToSelectedPieceInLeftUp.position.x-1 && j<pieceClosestToSelectedPieceInLeftUp.position.y-1){
                 i -= 1
                 j += 1
                 upperLeftMoves.add(IntOffset(i, j))
             }
-        }else{
-            while(i>pieceClosestToSelectedPieceInLeftUp.position.x && j<pieceClosestToSelectedPieceInLeftUp.position.y){
-                i -= 1
-                j += 1
-                upperLeftMoves.add(IntOffset(i, j))
-            }
-        }
+
     }
 
     Log.d("upper left move","$upperLeftMoves")
@@ -245,7 +239,7 @@ fun Piece.getRightUpperDiagonalMoves(
     var i = x
     var j = y
 
-    if(pieceClosestToSelectedPieceInRightUp == null){
+    if(pieceClosestToSelectedPieceInRightUp == null || pieceClosestToSelectedPieceInRightUp.color != color){
 
         while(i<=71 && j<=7){
             i += 1
@@ -257,7 +251,7 @@ fun Piece.getRightUpperDiagonalMoves(
             upperRightMoves.add(move)
         }
     }else{
-        if(pieceClosestToSelectedPieceInRightUp.color == color){
+
             while(i<pieceClosestToSelectedPieceInRightUp.position.x-1 && j<pieceClosestToSelectedPieceInRightUp.position.y-1){
                 i += 1
                 j += 1
@@ -267,17 +261,7 @@ fun Piece.getRightUpperDiagonalMoves(
                 )
                 upperRightMoves.add(move)
             }
-        }else{
-            while(i<pieceClosestToSelectedPieceInRightUp.position.x && j<pieceClosestToSelectedPieceInRightUp.position.y){
-                i += 1
-                j += 1
-                val move = IntOffset(
-                    x = i,
-                    y = j,
-                )
-                upperRightMoves.add(move)
-            }
-        }
+
     }
 
 
@@ -302,7 +286,7 @@ fun Piece.getLeftLowerDiagonalMoves(
 
     val lowerLeftMoves = mutableSetOf<IntOffset>()
 
-    if(pieceClosestToSelectedPieceInLeftDown == null){
+    if(pieceClosestToSelectedPieceInLeftDown == null || pieceClosestToSelectedPieceInLeftDown.color != color){
 
         while(i>=66 && j>=2){
             i -= 1
@@ -314,7 +298,7 @@ fun Piece.getLeftLowerDiagonalMoves(
             lowerLeftMoves.add(move)
         }
     }else{
-        if(pieceClosestToSelectedPieceInLeftDown.color == color){
+
             while(i>pieceClosestToSelectedPieceInLeftDown.position.x+1 && j>pieceClosestToSelectedPieceInLeftDown.position.y+1){
                 i -= 1
                 j -= 1
@@ -324,17 +308,7 @@ fun Piece.getLeftLowerDiagonalMoves(
                 )
                 lowerLeftMoves.add(move)
             }
-        }else{
-            while(i>pieceClosestToSelectedPieceInLeftDown.position.x && j>pieceClosestToSelectedPieceInLeftDown.position.y){
-                i -= 1
-                j -= 1
-                val move = IntOffset(
-                    x = i,
-                    y = j,
-                )
-                lowerLeftMoves.add(move)
-            }
-        }
+
     }
 
 
@@ -361,7 +335,7 @@ fun Piece.getRightLowerDiagonalMoves(
 
 
 
-    if( pieceClosestToSelectedPieceInRightDown == null){
+    if( pieceClosestToSelectedPieceInRightDown == null || pieceClosestToSelectedPieceInRightDown.color != color){
 
         while(i<=71 && j>=2){
             i += 1
@@ -373,7 +347,7 @@ fun Piece.getRightLowerDiagonalMoves(
             lowerRightMoves.add(move)
         }
     }else{
-        if(pieceClosestToSelectedPieceInRightDown.color == color){
+
             while(i<pieceClosestToSelectedPieceInRightDown.position.x-1 && j>pieceClosestToSelectedPieceInRightDown.position.y+1){
                 i += 1
                 j -= 1
@@ -383,17 +357,7 @@ fun Piece.getRightLowerDiagonalMoves(
                 )
                 lowerRightMoves.add(move)
             }
-        }else{
-            while(i<pieceClosestToSelectedPieceInRightDown.position.x && j>pieceClosestToSelectedPieceInRightDown.position.y){
-                i += 1
-                j -= 1
-                val move = IntOffset(
-                    x = i,
-                    y = j,
-                )
-                lowerRightMoves.add(move)
-            }
-        }
+
     }
 
 
