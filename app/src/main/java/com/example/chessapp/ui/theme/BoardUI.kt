@@ -29,6 +29,10 @@ fun BoardUI(
     modifier: Modifier = Modifier
 ) {
 
+    val showPromotionDialog = board.showPromotionDialog
+    val pawnToPromote = board.pawnToPromote
+
+
     Column(
         modifier = modifier
             .aspectRatio(1f)
@@ -73,7 +77,17 @@ fun BoardUI(
 
             }
 
-        Log.d("moves","${board.selectedPieceMoves}")
+        if (showPromotionDialog && pawnToPromote != null) {
+            PawnPromotionDialog(
+                onPieceSelected = { selectedType ->
+                    board.promotePawn(pawnToPromote,selectedType)
+
+                },
+                onDismissRequest = {  }
+            )
+        }
+
+
 
     }
 

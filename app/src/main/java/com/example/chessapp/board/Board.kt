@@ -1,7 +1,9 @@
 package com.example.chessapp.board
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -10,8 +12,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.IntOffset
+import com.example.chessapp.pieces.Bishop
 import com.example.chessapp.pieces.Color
+import com.example.chessapp.pieces.Knight
+import com.example.chessapp.pieces.Pawn
 import com.example.chessapp.pieces.Piece
+import com.example.chessapp.pieces.PieceType
+import com.example.chessapp.pieces.Queen
+import com.example.chessapp.pieces.Rook
+import com.example.chessapp.pieces.isEligibleForPromotion
 
 
 @Composable
@@ -23,14 +32,15 @@ fun rememberBoard(
         }
 
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun Board.rememberPieceAt(x: Int, y: Int): Piece? =
-    remember(x, y, moveIncrement) {
+    derivedStateOf {
         getPiece(
             x = x,
             y = y,
         )
-    }
+    }.value
 
 @Composable
 fun Board.rememberIsAvailableMove(x: Int, y: Int): Boolean =
@@ -65,6 +75,9 @@ class Board(
 
     var playerTurn by mutableStateOf<Color>(Color.W)
 
+    var showPromotionDialog by mutableStateOf(false)
+    var pawnToPromote: Piece? by mutableStateOf(null)
+
     /**
      * User events
      */
@@ -78,14 +91,11 @@ class Board(
         } else {
             selectedPiece = piece
             selectedPieceMoves = piece.getAvailableMoves(piece,pieces)
-        }
+            }
     }
 
 
-    private fun clearSelection() {
-        selectedPiece = null
-        selectedPieceMoves = emptySet()
-    }
+
 
 
     fun moveSelectedPiece(x: Int, y: Int) {
@@ -101,14 +111,24 @@ class Board(
                 position = IntOffset(x, y)
             )
 
+            moveIncrement++
+
+
             clearSelection()
+
+
 
             switchPlayerTurn()
 
-            moveIncrement++
+
         }
     }
 
+
+    private fun clearSelection() {
+        selectedPiece = null
+        selectedPieceMoves = emptySet()
+    }
     /**
      * Public Methods
      */
@@ -136,10 +156,41 @@ class Board(
     ) {
         val targetPiece = pieces.find { it.position == position }
 
+
         if (targetPiece != null)
             removePiece(targetPiece)
 
         piece.position = position
+
+        if (piece.type == PieceType.P && piece.isEligibleForPromotion()) {
+            pawnToPromote = piece
+            showPromotionDialog = true
+        }
+
+    }
+
+
+
+     fun promotePawn(pawnToPromote:Piece,pieceType: PieceType){
+
+
+        val selectedPieceType:PieceType = pieceType
+
+        val promotedPiece = when (selectedPieceType) {
+            PieceType.Q -> Queen(pawnToPromote.color, pawnToPromote.position)
+            PieceType.R -> Rook(pawnToPromote.color, pawnToPromote.position)
+            PieceType.B -> Bishop(pawnToPromote.color, pawnToPromote.position)
+            PieceType.N -> Knight(pawnToPromote.color, pawnToPromote.position)
+
+            else -> {
+                TODO()
+            }
+        }
+
+        removePiece(pawnToPromote)
+        _pieces.add(promotedPiece)
+         showPromotionDialog =false
+
     }
 
     private fun removePiece(piece: Piece) {
