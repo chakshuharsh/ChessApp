@@ -1,0 +1,18 @@
+We need to create a state holder class for this app like a viewmodel to handle configuration changes
+we also need to follow the architectural best practices
+don't pass the viewmodel instances to composable which only need some data/ methods of viewmodel
+
+
+
+Currently:-
+we need to solve the king safety bug
+and to implement the moves feature
+we have a composable which takes a list and we would call that twice one above the board UI and then below it again for each player and pass the respective list to each composable
+we want to know how many recomposition are happening for each composable function
+app became too slow and also add following-
+1. * sign for capture
+2. + sign for check
+3. # sign for checkmate
+
+
+What is possible reason for this slow behaviour may be overloaded main thread

@@ -1,5 +1,6 @@
 package com.example.chessapp.board
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -58,6 +59,20 @@ class Board(
     private val _pieces = mutableStateListOf<Piece>()
     val pieces get() = _pieces.toList()
 
+     private val whiteMovesList = mutableStateListOf<String>()
+     private val blackMovesList = mutableStateListOf<String>()
+
+    fun getWhiteMovesList(): List<String> {
+        return whiteMovesList
+    }
+
+    fun getBlackMovesList(): List<String> {
+        return blackMovesList
+    }
+
+
+
+
     init {
         _pieces.addAll(
             decodePieces(encodedPieces = encodedPieces)
@@ -73,7 +88,12 @@ class Board(
     var moveIncrement by mutableIntStateOf(0)
         private set
 
+
+    var isKingUnderThreat by mutableStateOf(false)
+
     var playerTurn by mutableStateOf<Color>(Color.W)
+
+
 
     var showPromotionDialog by mutableStateOf(false)
     var pawnToPromote: Piece? by mutableStateOf(null)
@@ -155,21 +175,38 @@ class Board(
         position: IntOffset
     ) {
         val targetPiece = pieces.find { it.position == position }
+        var captureMove:Boolean = false
 
-
-        if (targetPiece != null)
+        if (targetPiece != null) {
             removePiece(targetPiece)
+            captureMove = true
+        }
 
         piece.position = position
+        addMoves(piece, position,captureMove)
 
         if (piece.type == PieceType.P && piece.isEligibleForPromotion()) {
             pawnToPromote = piece
             showPromotionDialog = true
         }
 
+        val threatsToTheKing = threateningPieces(pieces,piece.color)
+        Log.d("threatsToKing","$threatsToTheKing")
+        if(threatsToTheKing.isNotEmpty()){
+            isKingUnderThreat = true
+        }
+
+
+
     }
 
+// king check checkmate
 
+    // check whether king is under check and then make the square of king red if under checked
+    // try to find out pieces that can counter the check either by attacking the threatening piece or we can see if the king can attack the enemy piece or not
+    // find pieces which can block the cheque by self pinning
+    // if the result from above calculation is empty that means it's a checkmate
+    // if we want to highlight the latest move -> that would be the last move of the
 
      fun promotePawn(pawnToPromote:Piece,pieceType: PieceType){
 
@@ -197,7 +234,67 @@ class Board(
         _pieces.remove(piece)
     }
 
+    @SuppressLint("SuspiciousIndentation")
+    private fun addMoves(piece: Piece, position: IntOffset,captureMove:Boolean){
 
+
+        val coordinate = getChessCoordinatesFromPosition(position)
+        Log.d("coordinate",coordinate)
+
+
+       val  pieceSymbol = when(piece.type)
+        {
+            PieceType.K -> "K"
+            PieceType.P -> ""
+            PieceType.N -> "N"
+            PieceType.R -> "R"
+            PieceType.B -> "B"
+            PieceType.Q -> "Q"
+        }
+        Log.d("capture", "$captureMove")
+
+        if(captureMove){
+            pieceSymbol.plus("hello")
+        }
+        val move = pieceSymbol.plus(coordinate)
+
+        Log.d("move value", move)
+
+
+        if(piece.color == Color.W){
+            whiteMovesList.add(move)
+        }
+        else{
+            blackMovesList.add(move)
+        }
+
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    private fun getChessCoordinatesFromPosition(position: IntOffset):String{
+        var coordinates:String = "null"
+
+        Log.d("position", "$position.x")
+        Log.d("position", "$position.y")
+
+        // so we will have a string of two characters and we need x and y coordinate
+        // for position we have to calculate the alphabet and number the y in position would be number and the alphabet can find out by x for x -> 0 alphabet is a and so on
+        val yCoordinate = (position.y).toString()
+        val xCoordinate = when(position.x){
+            65 -> "a"
+            66 -> "b"
+            67 -> "c"
+            68 -> "d"
+            69 -> "e"
+            70 -> "f"
+            71 -> "g"
+
+            else -> {"h"}
+        }
+
+      coordinates =   xCoordinate.plus(yCoordinate)
+        return coordinates
+    }
 
     private fun switchPlayerTurn() {
         playerTurn = if (playerTurn == Color.W) Color.B else Color.W

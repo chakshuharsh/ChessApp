@@ -1,9 +1,8 @@
 package com.example.chessapp.pieces
 
-import androidx.annotation.DrawableRes
+
 import androidx.compose.ui.unit.IntOffset
 import com.example.chessapp.R
-import com.example.chessapp.board.Board
 import com.example.chessapp.pieces.commonMoveHelper.getKnightMoves
 
 class Knight(
@@ -24,7 +23,6 @@ class Knight(
 
     override fun getAvailableMoves( piece:Piece,pieces:List<Piece>): Set<IntOffset> {
         val moves = getKnightMoves(piece,pieces)
-
 
         return moves
     }

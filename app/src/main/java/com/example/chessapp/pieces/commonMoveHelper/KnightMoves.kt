@@ -2,9 +2,10 @@ package com.example.chessapp.pieces.commonMoveHelper
 
 import android.util.Log
 import androidx.compose.ui.unit.IntOffset
+import com.example.chessapp.pieces.Knight
 import com.example.chessapp.pieces.Piece
 
-fun Piece.getKnightMoves(
+fun Knight.getKnightMoves(
     piece: Piece,
     pieces: List<Piece>,
 ): MutableSet<IntOffset>{
@@ -28,7 +29,7 @@ fun Piece.getKnightMoves(
         IntOffset(x - 2, y + 1),
         IntOffset(x - 2, y - 1)
     ).filter { move ->
-        move.x in 65..72 && move.y in 0..7 // Check if the move is within the board
+        move.x in 65..72 && move.y in 1..8 // Check if the move is within the board
     }
 
     Log.d("all Possible Moves","$possibleMoves")
