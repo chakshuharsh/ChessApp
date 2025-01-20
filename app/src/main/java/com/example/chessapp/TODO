@@ -10,9 +10,10 @@ and to implement the moves feature
 we have a composable which takes a list and we would call that twice one above the board UI and then below it again for each player and pass the respective list to each composable
 we want to know how many recomposition are happening for each composable function
 app became too slow and also add following-
-1. * sign for capture
+1. * sign for capture -> Facing a bug
 2. + sign for check
 3. # sign for checkmate
 
 
-What is possible reason for this slow behaviour may be overloaded main thread
+Estimate the load on main thread
+Add animation to piece movements

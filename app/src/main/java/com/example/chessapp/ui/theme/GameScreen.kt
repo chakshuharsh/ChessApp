@@ -1,6 +1,7 @@
 package com.example.chessapp.ui.theme
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,20 +25,23 @@ import androidx.compose.ui.unit.sp
 import com.example.chessapp.board.InitialEncodedPiecesPosition
 import com.example.chessapp.board.rememberBoard
 
+
 @Composable
 fun GameScreen() {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.DarkGray)
+            .background(color = Color.DarkGray),
+
     ) {
 
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color.DarkGray)
+                .background(color = Color.DarkGray),
+                    verticalArrangement = Arrangement.SpaceBetween,
         ) {
 
                 val initialEncodedPosition = InitialEncodedPiecesPosition
@@ -46,12 +50,13 @@ fun GameScreen() {
                 val blackMoves = board.getBlackMovesList()
 
 
+
                      ListOfMoves(
                         color = com.example.chessapp.pieces.Color.B,
                         listOfMoves = blackMoves,
                      )
 
-                    Spacer(modifier = Modifier.height(50.dp))
+//                    Spacer(modifier = Modifier.height(10.dp))
 
                     BoardUI(board, modifier = Modifier)
 
@@ -77,7 +82,7 @@ fun ListOfMoves(color:com.example.chessapp.pieces.Color,listOfMoves:List<String>
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 15.dp, top = 10.dp)
+            .padding(bottom = 70.dp, top = 100.dp, start =  10.dp, end = 10.dp)
     ) {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
@@ -88,18 +93,19 @@ fun ListOfMoves(color:com.example.chessapp.pieces.Color,listOfMoves:List<String>
             ) {
 
             items(listOfMoves.size) { index ->
-                val move = listOfMoves[index]
+                val move = index.toString()+". "+listOfMoves[index]
                 val isMostRecent = index == listOfMoves.size - 1 // Highlight the most recent move
 
                 Text(
                     text = move,
+                    color = if(color == com.example.chessapp.pieces.Color.W){Color.White}else{Color.Black},
                     fontSize = 16.sp,
                     fontWeight = if (isMostRecent) FontWeight.Bold else FontWeight.Normal,
                     modifier = Modifier
                         .background(
                             if (isMostRecent) Color.LightGray else Color.Transparent
                         )
-                        .padding(4.dp)
+                        .padding(10.dp)
                 )
 
             }

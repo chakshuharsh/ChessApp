@@ -40,7 +40,8 @@ fun BoardUI(
                 width = 8.dp,
                 color = Color.White
             )
-            .padding(8.dp)
+            .padding(8.dp),
+
     ) {
 
         BoardYCoordinates

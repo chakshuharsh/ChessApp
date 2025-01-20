@@ -1,6 +1,7 @@
 package com.example.chessapp.ui.theme
 
 
+import android.hardware.lights.Light
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,20 +36,24 @@ fun BoardCell(
     isAvailableMove: State<Boolean>,
     modifier:Modifier = Modifier
 ){
-    val isKingUnderThreat = board.isKingUnderThreat
+    val isBlackKingUnderThreat = board.isBlackKingUnderThreat
+
+
+    val isWhiteKingUnderThreat = board.isWhiteKingUnderThreat
+
     val backgroundColor =
         when {
-            piece != null && piece == board.selectedPiece ->
+                piece != null && piece == board.selectedPiece -> ActiveColor
 
-                ActiveColor
+                (x + y) % 2 == 0 -> DarkColor
 
-            (x + y) % 2 == 0 ->
-                DarkColor
+                piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.W && isWhiteKingUnderThreat -> Red
+                piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.B && isBlackKingUnderThreat -> Red
 
-            piece?.type == PieceType.K && isKingUnderThreat -> Red
 
-            else ->
-                LightColor
+                 (x + y) % 2 != 0 -> LightColor
+
+                else -> LightColor
         }
 
     val textColor =

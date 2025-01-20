@@ -89,7 +89,10 @@ class Board(
         private set
 
 
-    var isKingUnderThreat by mutableStateOf(false)
+    var isWhiteKingUnderThreat by mutableStateOf(false)
+
+    var isBlackKingUnderThreat by mutableStateOf(false)
+
 
     var playerTurn by mutableStateOf<Color>(Color.W)
 
@@ -177,6 +180,7 @@ class Board(
         val targetPiece = pieces.find { it.position == position }
         var captureMove:Boolean = false
 
+
         if (targetPiece != null) {
             removePiece(targetPiece)
             captureMove = true
@@ -191,9 +195,17 @@ class Board(
         }
 
         val threatsToTheKing = threateningPieces(pieces,piece.color)
-        Log.d("threatsToKing","$threatsToTheKing")
-        if(threatsToTheKing.isNotEmpty()){
-            isKingUnderThreat = true
+
+        // list that returns the enemyPieces which are threat to the king
+
+        if(threatsToTheKing.isNotEmpty() && piece.color == Color.W ){
+           Log.d("White Enemy Pieces","$threatsToTheKing")
+            isBlackKingUnderThreat = true
+        }
+
+        if(threatsToTheKing.isNotEmpty() && piece.color == Color.B ){
+            Log.d("Black Enemy Pieces","$threatsToTheKing")
+            isWhiteKingUnderThreat = true
         }
 
 
@@ -234,7 +246,7 @@ class Board(
         _pieces.remove(piece)
     }
 
-    @SuppressLint("SuspiciousIndentation")
+
     private fun addMoves(piece: Piece, position: IntOffset,captureMove:Boolean){
 
 
@@ -269,7 +281,6 @@ class Board(
         }
 
     }
-
     @SuppressLint("SuspiciousIndentation")
     private fun getChessCoordinatesFromPosition(position: IntOffset):String{
         var coordinates:String = "null"

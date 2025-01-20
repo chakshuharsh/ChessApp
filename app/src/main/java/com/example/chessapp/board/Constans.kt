@@ -4,7 +4,7 @@ import com.example.chessapp.pieces.Piece
 
 
 /**
- * A to H
+ * A to H -> 65 - 72
  */
 val BoardXCoordinates = List(8) {
     'A'.code + it
