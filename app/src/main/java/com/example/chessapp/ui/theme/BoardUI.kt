@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import com.example.chessapp.board.BoardXCoordinates
 import com.example.chessapp.board.BoardYCoordinates
 import com.example.chessapp.board.rememberIsAvailableMove
 import com.example.chessapp.board.rememberPieceAt
+import com.example.chessapp.pieces.PieceType
 
 
 @Composable
@@ -30,6 +32,9 @@ fun BoardUI(
 
     val showPromotionDialog = board.showPromotionDialog
     val pawnToPromote = board.pawnToPromote
+    val isBlackKingUnderThreat: MutableState<Boolean> = board.isBlackKingUnderThreat
+    val isWhiteKingUnderThreat: MutableState<Boolean> = board.isWhiteKingUnderThreat
+    val selectedPiece = board.selectedPiece
 
 
     Column(
@@ -58,16 +63,43 @@ fun BoardUI(
 
                              isAvailableMove.value =
                                 board.rememberIsAvailableMove(x, y)
+                             val backgroundColor =
+                                when {
+                                    piece != null && piece == selectedPiece -> ActiveColor
+                                    (x + y) % 2 == 0 -> DarkColor
 
+                                    piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.W && isWhiteKingUnderThreat.value -> Red
+                                    piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.B && isBlackKingUnderThreat.value -> Red
+
+
+                                    (x + y) % 2 != 0 -> LightColor
+
+                                    else -> LightColor
+                                }
+
+                            val textColor =
+                                when {
+                                    piece != null && piece == selectedPiece ->
+                                        Color.White
+
+                                    (x + y) % 2 == 0 ->
+                                        LightColor
+
+                                    else ->
+                                        DarkColor
+                                }
                                 BoardCell(
-                                    board,
                                     piece,
                                     x,
                                     y,
-                                    isAvailableMove,
+                                    isAvailableMove.value,
+                                    onSelectPiece = { board.selectPiece(it) },
+                                    onMovePiece = { board.moveSelectedPiece(x, y) },
                                     modifier = Modifier
                                         .weight(1f)
-                                        .fillMaxHeight()
+                                        .fillMaxHeight(),
+                                     backgroundColor,
+                                    textColor
                                 )
 
                         }

@@ -26,6 +26,7 @@ import com.example.chessapp.board.InitialEncodedPiecesPosition
 import com.example.chessapp.board.rememberBoard
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun GameScreen() {
     Box(

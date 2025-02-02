@@ -37,14 +37,14 @@ class King(
 
         // Define all possible moves a king can make
         val possibleMoves = listOf(
-            IntOffset(x - 1, y - 1), // Top-left
-            IntOffset(x, y - 1),     // Top
-            IntOffset(x + 1, y - 1), // Top-right
-            IntOffset(x - 1, y),     // Left
-            IntOffset(x + 1, y),     // Right
-            IntOffset(x - 1, y + 1), // Bottom-left
-            IntOffset(x, y + 1),     // Bottom
-            IntOffset(x + 1, y + 1)  // Bottom-right
+            IntOffset(x - 1, y - 1),
+            IntOffset(x, y - 1),
+            IntOffset(x + 1, y - 1),
+            IntOffset(x - 1, y),
+            IntOffset(x + 1, y),
+            IntOffset(x - 1, y + 1),
+            IntOffset(x, y + 1),
+            IntOffset(x + 1, y + 1)
         ).filter { move ->
             move.x in 65..72 && move.y in 1..8 // Filter moves within board boundaries
         }

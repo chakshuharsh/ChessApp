@@ -1,7 +1,6 @@
 package com.example.chessapp.ui.theme
 
 
-import android.hardware.lights.Light
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,46 +29,19 @@ import com.example.chessapp.pieces.PieceType
 
 @Composable
 fun BoardCell(
-    board: Board,
     piece: Piece?,
     x:Int,
     y:Int,
-
-    isAvailableMove: State<Boolean>,
-    modifier:Modifier = Modifier
+    isAvailableMove: Boolean,
+    onSelectPiece: (Piece) -> Unit,
+    onMovePiece: () -> Unit,
+    modifier:Modifier = Modifier,
+    backgroundColor:Color,
+    textColor:Color
 ){
-    val isBlackKingUnderThreat = board.isBlackKingUnderThreat
 
-
-    val isWhiteKingUnderThreat = board.isWhiteKingUnderThreat
-
-    val backgroundColor =
-        when {
-                piece != null && piece == board.selectedPiece -> ActiveColor
-
-                (x + y) % 2 == 0 -> DarkColor
-
-                piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.W && isWhiteKingUnderThreat -> Red
-                piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.B && isBlackKingUnderThreat -> Red
-
-
-                 (x + y) % 2 != 0 -> LightColor
-
-                else -> LightColor
-        }
-
-    val textColor =
-        when {
-            piece != null && piece == board.selectedPiece ->
-                Color.White
-
-            (x + y) % 2 == 0 ->
-                LightColor
-
-            else ->
-               DarkColor
-        }
-
+//    Log.d("BoardCell", "Recomposed for x=$x, y=$y")
+//    Log.d("isAvailable","$isAvailableMove for x = $x and y = $y")
 
     Box(
         modifier = modifier
@@ -109,14 +83,14 @@ fun BoardCell(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) {
-                        board.selectPiece(it)
+                        onSelectPiece(it)
                     }
                     .fillMaxSize()
                     .padding(8.dp)
             )
         }
 
-        if (isAvailableMove.value)
+        if (isAvailableMove)
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -125,8 +99,7 @@ fun BoardCell(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) {
-                        board.moveSelectedPiece(x, y)
-                        Log.d("black queen moves", "${board.selectedPieceMoves}")
+                        onMovePiece()
                     }
                     .drawBehind {
                         drawCircle(

@@ -1,9 +1,9 @@
 package com.example.chessapp.board
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.IntOffset
 import com.example.chessapp.pieces.Bishop
 import com.example.chessapp.pieces.Color
 import com.example.chessapp.pieces.Knight
-import com.example.chessapp.pieces.Pawn
 import com.example.chessapp.pieces.Piece
 import com.example.chessapp.pieces.PieceType
 import com.example.chessapp.pieces.Queen
@@ -50,6 +49,9 @@ fun Board.rememberIsAvailableMove(x: Int, y: Int): Boolean =
             x = x,
             y = y,
         )
+        // this function calls the isAvailable function and saves the value
+        // for a coordinate whether it is available or not for the move and also saves the value so that
+        // it does not change in recomposition
     }
 
 @Immutable
@@ -61,7 +63,6 @@ class Board(
 
      private val whiteMovesList = mutableStateListOf<String>()
      private val blackMovesList = mutableStateListOf<String>()
-
     fun getWhiteMovesList(): List<String> {
         return whiteMovesList
     }
@@ -82,45 +83,87 @@ class Board(
     var selectedPiece by mutableStateOf<Piece?>(null)
         private set
 
-    var selectedPieceMoves by mutableStateOf(emptySet<IntOffset>())
+    var selectedPieceMoves = emptySet<IntOffset>()
         private set
 
     var moveIncrement by mutableIntStateOf(0)
         private set
 
 
-    var isWhiteKingUnderThreat by mutableStateOf(false)
+    var isWhiteKingUnderThreat = mutableStateOf(false)
 
-    var isBlackKingUnderThreat by mutableStateOf(false)
+    var isBlackKingUnderThreat = mutableStateOf(false)
 
+    // why not to have a boolean variable which board cell can read and decide that if isWhiteKingUnder threat and number of threats are more than two
 
     var playerTurn by mutableStateOf<Color>(Color.W)
 
-
+    private var threatToWhiteKing = threateningPieces(pieces,Color.B)
+    private var threatToBlackKing = threateningPieces(pieces,Color.W)
 
     var showPromotionDialog by mutableStateOf(false)
     var pawnToPromote: Piece? by mutableStateOf(null)
 
-    /**
-     * User events
-     */
 
     fun selectPiece(piece: Piece) {
-        if (piece.color != playerTurn)
+
+        if (piece.color != playerTurn) {
             return
+        }
 
         if (piece == selectedPiece) {
+           // if king is under threat then we don't want to do the calculation again
             clearSelection()
-        } else {
-            selectedPiece = piece
-            selectedPieceMoves = piece.getAvailableMoves(piece,pieces)
+            return
+        }
+
+        if(isWhiteKingUnderThreat.value)
+        {
+
+            if(threatToWhiteKing.size > 1) {
+
+                if(piece.type == PieceType.K)
+                {
+                    selectedPiece = piece
+                    selectedPieceMoves = piece.getAvailableMoves(piece,pieces)
+                    return
+                }
+                else{
+                    return
+                }
+
+            } else if(threatToWhiteKing.size == 1){
+                // follow the displacement + attack + pinning
+                selectedPiece = piece
+                selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
             }
+
+           }
+
+        else if(isBlackKingUnderThreat.value)
+        {
+
+            if(threatToBlackKing.size > 1) {
+
+                if (piece.type == PieceType.K) {
+                    selectedPiece = piece
+                    selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
+                    return
+                } else {
+                    return
+                }
+            }  else if(threatToBlackKing.size == 1){
+                // follow the displacement + attack + pinning
+                selectedPiece = piece
+                selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
+            }
+        }
+
+        else {
+            selectedPiece = piece
+            selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
+        }
     }
-
-
-
-
-
     fun moveSelectedPiece(x: Int, y: Int) {
         selectedPiece?.let { piece ->
             if (!isAvailableMove(x = x, y = y))
@@ -149,8 +192,10 @@ class Board(
 
 
     private fun clearSelection() {
+       // make sure that we just remove the UI state not he data
         selectedPiece = null
         selectedPieceMoves = emptySet()
+
     }
     /**
      * Public Methods
@@ -161,12 +206,12 @@ class Board(
 
     fun isAvailableMove(x: Int, y: Int): Boolean {
         return selectedPieceMoves.any { it.x == x && it.y == y }
+    // this function returns true is a cell is available for a piece to move
     }
 
 
     fun save() {
         val encodedBoard = encode()
- 
     }
 
     /**
@@ -194,31 +239,28 @@ class Board(
             showPromotionDialog = true
         }
 
-        val threatsToTheKing = threateningPieces(pieces,piece.color)
-
-        // list that returns the enemyPieces which are threat to the king
-
-        if(threatsToTheKing.isNotEmpty() && piece.color == Color.W ){
-           Log.d("White Enemy Pieces","$threatsToTheKing")
-            isBlackKingUnderThreat = true
+         if(piece.color == Color.W){
+            threatToBlackKing =  threateningPieces(pieces,Color.W)
+            threatToWhiteKing.clear()
+            isWhiteKingUnderThreat.value = false
+        }else{
+           threatToWhiteKing = threateningPieces(pieces,Color.B)
+            threatToBlackKing.clear()
+            isBlackKingUnderThreat.value = false
         }
 
-        if(threatsToTheKing.isNotEmpty() && piece.color == Color.B ){
-            Log.d("Black Enemy Pieces","$threatsToTheKing")
-            isWhiteKingUnderThreat = true
+        if(threatToBlackKing.size != 0 ){
+            isBlackKingUnderThreat.value = true
         }
 
+        if(threatToWhiteKing.size != 0){
+            isWhiteKingUnderThreat.value = true
+        }
 
 
     }
 
-// king check checkmate
 
-    // check whether king is under check and then make the square of king red if under checked
-    // try to find out pieces that can counter the check either by attacking the threatening piece or we can see if the king can attack the enemy piece or not
-    // find pieces which can block the cheque by self pinning
-    // if the result from above calculation is empty that means it's a checkmate
-    // if we want to highlight the latest move -> that would be the last move of the
 
      fun promotePawn(pawnToPromote:Piece,pieceType: PieceType){
 
@@ -243,6 +285,8 @@ class Board(
     }
 
     private fun removePiece(piece: Piece) {
+
+       // if the attacking piece is king and the piece to be removed is protected by any of it's piece then we cannot move the king to that place
         _pieces.remove(piece)
     }
 
