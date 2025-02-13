@@ -1,6 +1,5 @@
 package com.example.chessapp.ui.theme
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -94,7 +93,9 @@ fun BoardUI(
                                     y,
                                     isAvailableMove.value,
                                     onSelectPiece = { board.selectPiece(it) },
-                                    onMovePiece = { board.moveSelectedPiece(x, y) },
+                                    onMovePiece ={ prevX, prevY, newX, newY ->
+                                        board.moveSelectedPiece(newX, newY, prevX, prevY)
+                                    },
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight(),
