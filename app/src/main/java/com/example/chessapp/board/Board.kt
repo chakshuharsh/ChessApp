@@ -105,7 +105,7 @@ class Board(
     var pawnToPromote: Piece? by mutableStateOf(null)
 
 
-    fun selectPiece(piece: Piece) {
+    fun selectPiece(piece: Piece) { // we need to pass the current position
 
         if (piece.color != playerTurn) {
             return
@@ -129,7 +129,7 @@ class Board(
                     return
                 }
                 else{
-                    return
+                    return // a single piece cannot safe the king from double threat
                 }
 
             } else if(threatToWhiteKing.size == 1){
@@ -164,17 +164,21 @@ class Board(
             selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
         }
     }
-    fun moveSelectedPiece(x: Int, y: Int) {
+    fun moveSelectedPiece(newX: Int, newY: Int,previousX:Int,previousY:Int) { // need to pass the current position as well to save it
         selectedPiece?.let { piece ->
-            if (!isAvailableMove(x = x, y = y))
+            if (!isAvailableMove(x = newX, y = newY))
                 return
 
             if (piece.color != playerTurn)
-                return
+                return // cannot capture own pieces
+
+            // when we know the current and final position of the piece for a move we will save it in some useful data structure
+
 
             movePiece(
                 piece = piece,
-                position = IntOffset(x, y)
+                newPosition = IntOffset(newX, newY),
+                oldPosition = IntOffset(previousX,previousY)
             )
 
             moveIncrement++
@@ -220,19 +224,20 @@ class Board(
 
     private fun movePiece(
         piece: Piece,
-        position: IntOffset
+        newPosition: IntOffset,
+        oldPosition:IntOffset
     ) {
-        val targetPiece = pieces.find { it.position == position }
+        val targetPiece = pieces.find { it.position == newPosition }
         var captureMove:Boolean = false
 
 
         if (targetPiece != null) {
-            removePiece(targetPiece)
             captureMove = true
+            removePiece(targetPiece)
         }
 
-        piece.position = position
-        addMoves(piece, position,captureMove)
+        piece.position = newPosition
+        addMoves(piece, newPosition,captureMove,oldPosition)
 
         if (piece.type == PieceType.P && piece.isEligibleForPromotion()) {
             pawnToPromote = piece
@@ -243,7 +248,8 @@ class Board(
             threatToBlackKing =  threateningPieces(pieces,Color.W)
             threatToWhiteKing.clear()
             isWhiteKingUnderThreat.value = false
-        }else{
+        }
+         else{
            threatToWhiteKing = threateningPieces(pieces,Color.B)
             threatToBlackKing.clear()
             isBlackKingUnderThreat.value = false
@@ -266,7 +272,6 @@ class Board(
 
 
         val selectedPieceType:PieceType = pieceType
-
         val promotedPiece = when (selectedPieceType) {
             PieceType.Q -> Queen(pawnToPromote.color, pawnToPromote.position)
             PieceType.R -> Rook(pawnToPromote.color, pawnToPromote.position)
@@ -291,14 +296,15 @@ class Board(
     }
 
 
-    private fun addMoves(piece: Piece, position: IntOffset,captureMove:Boolean){
+    private fun addMoves(piece: Piece, newPosition: IntOffset,captureMove:Boolean,oldPosition: IntOffset){
+
+//        When a pawn makes a capture, the file from which the pawn departed is used to identify the pawn. For example, exd5 (pawn on the e-file captures the piece on d5).
+         // for pawn we need to pass the previous position as well
+        val coordinate = getChessCoordinatesFromPosition(newPosition)
 
 
-        val coordinate = getChessCoordinatesFromPosition(position)
-        Log.d("coordinate",coordinate)
 
-
-       val  pieceSymbol = when(piece.type)
+       var  pieceSymbol = when(piece.type)
         {
             PieceType.K -> "K"
             PieceType.P -> ""
@@ -307,14 +313,15 @@ class Board(
             PieceType.B -> "B"
             PieceType.Q -> "Q"
         }
-        Log.d("capture", "$captureMove")
 
         if(captureMove){
-            pieceSymbol.plus("hello")
+            pieceSymbol =  pieceSymbol.plus("*")
         }
+
+
         val move = pieceSymbol.plus(coordinate)
 
-        Log.d("move value", move)
+
 
 
         if(piece.color == Color.W){

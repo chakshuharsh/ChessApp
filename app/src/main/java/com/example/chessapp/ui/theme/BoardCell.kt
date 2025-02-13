@@ -1,7 +1,6 @@
 package com.example.chessapp.ui.theme
 
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,10 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.chessapp.board.Board
 import com.example.chessapp.board.BoardXCoordinates
 import com.example.chessapp.pieces.Piece
-import com.example.chessapp.pieces.PieceType
 
 @Composable
 fun BoardCell(
@@ -34,7 +28,7 @@ fun BoardCell(
     y:Int,
     isAvailableMove: Boolean,
     onSelectPiece: (Piece) -> Unit,
-    onMovePiece: () -> Unit,
+    onMovePiece: (Int, Int, Int, Int) -> Unit,
     modifier:Modifier = Modifier,
     backgroundColor:Color,
     textColor:Color
@@ -99,7 +93,8 @@ fun BoardCell(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) {
-                        onMovePiece()
+                        if (piece != null) {
+                            onMovePiece(piece.position.x, piece.position.y, x, y)                         }
                     }
                     .drawBehind {
                         drawCircle(
