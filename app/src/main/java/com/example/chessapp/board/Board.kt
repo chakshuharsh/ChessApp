@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -54,7 +55,7 @@ fun Board.rememberIsAvailableMove(x: Int, y: Int): Boolean =
         // it does not change in recomposition
     }
 
-@Immutable
+@Stable
 class Board(
     encodedPieces: String = InitialEncodedPiecesPosition,
 ) {
@@ -164,7 +165,8 @@ class Board(
             selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
         }
     }
-    fun moveSelectedPiece(newX: Int, newY: Int,previousX:Int,previousY:Int) { // need to pass the current position as well to save it
+    fun moveSelectedPiece(newX: Int, newY: Int) { // need to pass the current position as well to save it
+        Log.d("Reached 4 ","YES")
         selectedPiece?.let { piece ->
             if (!isAvailableMove(x = newX, y = newY))
                 return
@@ -178,7 +180,7 @@ class Board(
             movePiece(
                 piece = piece,
                 newPosition = IntOffset(newX, newY),
-                oldPosition = IntOffset(previousX,previousY)
+//                oldPosition = IntOffset(previousX,previousY)
             )
 
             moveIncrement++
@@ -225,8 +227,9 @@ class Board(
     private fun movePiece(
         piece: Piece,
         newPosition: IntOffset,
-        oldPosition:IntOffset
+//        oldPosition:IntOffset
     ) {
+        Log.d("Reached 5 ","YES")
         val targetPiece = pieces.find { it.position == newPosition }
         var captureMove:Boolean = false
 
@@ -237,7 +240,7 @@ class Board(
         }
 
         piece.position = newPosition
-        addMoves(piece, newPosition,captureMove,oldPosition)
+        addMoves(piece, newPosition,captureMove /*,oldPosition*/)
 
         if (piece.type == PieceType.P && piece.isEligibleForPromotion()) {
             pawnToPromote = piece
@@ -296,7 +299,7 @@ class Board(
     }
 
 
-    private fun addMoves(piece: Piece, newPosition: IntOffset,captureMove:Boolean,oldPosition: IntOffset){
+    private fun addMoves(piece: Piece, newPosition: IntOffset,captureMove:Boolean/*,oldPosition: IntOffset*/){
 
 //        When a pawn makes a capture, the file from which the pawn departed is used to identify the pawn. For example, exd5 (pawn on the e-file captures the piece on d5).
          // for pawn we need to pass the previous position as well

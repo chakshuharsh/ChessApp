@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chessapp.board.InitialEncodedPiecesPosition
-import com.example.chessapp.board.rememberBoard
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -47,6 +46,7 @@ fun GameScreen() {
 
                 val initialEncodedPosition = InitialEncodedPiecesPosition
                 val board = rememberBoard(initialEncodedPosition)
+//                val boardViewModel = BoardViewModel(board)
                 val whiteMoves = board.getWhiteMovesList()
                 val blackMoves = board.getBlackMovesList()
 

@@ -1,6 +1,7 @@
 package com.example.chessapp.ui.theme
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +29,7 @@ fun BoardCell(
     y:Int,
     isAvailableMove: Boolean,
     onSelectPiece: (Piece) -> Unit,
-    onMovePiece: (Int, Int, Int, Int) -> Unit,
+    onMovePiece: (Int, Int) -> Unit,
     modifier:Modifier = Modifier,
     backgroundColor:Color,
     textColor:Color
@@ -93,9 +94,12 @@ fun BoardCell(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) {
-                        if (piece != null) {
-                            onMovePiece(piece.position.x, piece.position.y, x, y)                         }
+
+                            Log.d("Reached 2 ","YES")
+                        onMovePiece(x,y/*,piece.position.x,piece.position.y*/)
+
                     }
+
                     .drawBehind {
                         drawCircle(
                             color = ActiveColor,

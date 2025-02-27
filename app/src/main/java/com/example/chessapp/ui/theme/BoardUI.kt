@@ -93,8 +93,8 @@ fun BoardUI(
                                     y,
                                     isAvailableMove.value,
                                     onSelectPiece = { board.selectPiece(it) },
-                                    onMovePiece ={ prevX, prevY, newX, newY ->
-                                        board.moveSelectedPiece(newX, newY, prevX, prevY)
+                                    onMovePiece ={ newX, newY  ->
+                                        board.moveSelectedPiece(newX, newY /*, prevX, prevY*/)
                                     },
                                     modifier = Modifier
                                         .weight(1f)

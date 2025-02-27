@@ -6,7 +6,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.example.chessapp.pieces.PieceType
-
 @Composable
 fun PawnPromotionDialog(
     onPieceSelected: (PieceType) -> Unit,
