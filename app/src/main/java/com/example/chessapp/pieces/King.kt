@@ -11,6 +11,7 @@ class King(
 ) :Piece{
 
     override val type: PieceType = PieceType.K
+    override val value = 0
 
 
     override val drawable =

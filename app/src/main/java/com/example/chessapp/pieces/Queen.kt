@@ -14,7 +14,7 @@ class Queen(
 ) :Piece {
 
     override val type: PieceType = PieceType.Q
-
+    override val value = 9
 
     override val drawable =
         if(color.isWhite){

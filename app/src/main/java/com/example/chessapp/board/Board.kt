@@ -3,6 +3,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -64,6 +65,9 @@ class Board(
 
      private val whiteMovesList = mutableStateListOf<String>()
      private val blackMovesList = mutableStateListOf<String>()
+
+
+
     fun getWhiteMovesList(): List<String> {
         return whiteMovesList
     }
@@ -97,7 +101,15 @@ class Board(
 
     // why not to have a boolean variable which board cell can read and decide that if isWhiteKingUnder threat and number of threats are more than two
 
-    var playerTurn by mutableStateOf<Color>(Color.W)
+    private var playerTurn by mutableStateOf<Color>(Color.W)
+
+
+    var whiteAdvantage: MutableIntState = mutableIntStateOf(0)
+    private set
+    var blackAdvantage: MutableIntState = mutableIntStateOf(0)
+    private set
+
+
 
     private var threatToWhiteKing = threateningPieces(pieces,Color.B)
     private var threatToBlackKing = threateningPieces(pieces,Color.W)
@@ -236,6 +248,34 @@ class Board(
 
         if (targetPiece != null) {
             captureMove = true
+            // increment the advantage on piece.color
+            // basis of piece color we have to assign value to the advantage
+            if(targetPiece.color == Color.W){
+                blackAdvantage.intValue  += when(targetPiece.type){
+                    PieceType.P-> targetPiece.value
+                    PieceType.Q -> targetPiece.value
+                    PieceType.R -> targetPiece.value
+                    PieceType.B, PieceType.N -> targetPiece.value
+
+                    else->{
+                        0
+                    }
+                }
+            }
+
+            if(targetPiece.color == Color.B){
+                whiteAdvantage.intValue  += when(targetPiece.type){
+                    PieceType.P-> targetPiece.value
+                    PieceType.Q -> targetPiece.value
+                    PieceType.R -> targetPiece.value
+                    PieceType.B, PieceType.N -> targetPiece.value
+                    else->{
+                        0
+                    }
+                }
+            }
+
+
             removePiece(targetPiece)
         }
 
@@ -273,7 +313,8 @@ class Board(
 
      fun promotePawn(pawnToPromote:Piece,pieceType: PieceType){
 
-
+// this function will update the advantage on basis of promotedPiece
+         // if pp is white white adv++ else black
         val selectedPieceType:PieceType = pieceType
         val promotedPiece = when (selectedPieceType) {
             PieceType.Q -> Queen(pawnToPromote.color, pawnToPromote.position)
@@ -286,9 +327,27 @@ class Board(
             }
         }
 
+         if(promotedPiece.color == Color.W){
+             whiteAdvantage.intValue += when (promotedPiece.type) {
+                 PieceType.Q -> promotedPiece.value
+                 PieceType.R -> promotedPiece.value
+                 PieceType.B, PieceType.N -> promotedPiece.value
+                 else -> {
+                     0
+                 }
+             }
+         }else if(promotedPiece.color == Color.B){
+             blackAdvantage.intValue  += when(promotedPiece.type){
+                 PieceType.Q -> 9
+                 PieceType.R -> 5
+                 PieceType.B, PieceType.N -> 3
+                 else->{0}
+             }
+         }
+
         removePiece(pawnToPromote)
         _pieces.add(promotedPiece)
-         showPromotionDialog =false
+         showPromotionDialog = false
 
     }
 

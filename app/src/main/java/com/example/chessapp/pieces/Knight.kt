@@ -10,6 +10,7 @@ class Knight(
     override var position: IntOffset
 ) :Piece {
     override val type:PieceType = PieceType.N
+    override val value = 3
 
 
     override val drawable =

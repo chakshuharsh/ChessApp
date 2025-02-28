@@ -26,6 +26,8 @@ interface Piece {
 
     val type: PieceType
 
+    val value:Int
+
     val drawable: Int
     fun getAvailableMoves( piece:Piece,pieces: List<Piece>): Set<IntOffset>
 

@@ -11,6 +11,7 @@ class Pawn(
 ):Piece {
 
     override val type: PieceType = PieceType.P
+    override val value = 1
 
 
     override val drawable =

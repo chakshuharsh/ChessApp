@@ -15,6 +15,8 @@ class Bishop(
 
     override val type: PieceType = PieceType.B
 
+    override val value = 3
+
     override val drawable: Int =
         if(color.isWhite){
             R.drawable.bishopwhite

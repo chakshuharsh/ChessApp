@@ -2,6 +2,7 @@ package com.example.chessapp.ui.theme
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,10 +48,26 @@ fun GameScreen() {
 
                 val initialEncodedPosition = InitialEncodedPiecesPosition
                 val board = rememberBoard(initialEncodedPosition)
-//                val boardViewModel = BoardViewModel(board)
-                val whiteMoves = board.getWhiteMovesList()
-                val blackMoves = board.getBlackMovesList()
 
+            val whiteAdvantage = remember{board.whiteAdvantage}
+
+            Log.d("whiteAdvantage","${whiteAdvantage.intValue}")
+
+
+            val blackAdvantage = remember{board.blackAdvantage}
+            Log.d("blackAdvantage","${blackAdvantage.intValue}")
+
+
+            val netAdvantage = whiteAdvantage.intValue - blackAdvantage.intValue
+
+
+//                val boardViewModel = BoardViewModel(board)
+                val whiteMoves = remember {
+                    board.getWhiteMovesList()
+                }
+                val blackMoves = remember {
+                    board.getBlackMovesList()
+                }
 
 
                      ListOfMoves(
@@ -57,9 +75,19 @@ fun GameScreen() {
                         listOfMoves = blackMoves,
                      )
 
-//                    Spacer(modifier = Modifier.height(10.dp))
+//            Spacer(modifier = Modifier.height(10.dp))
+
+            if(netAdvantage<0){
+                BlackAdvantageText(netAdvantage)
+            }
+
 
                     BoardUI(board, modifier = Modifier)
+
+            if(netAdvantage>0){
+                WhiteAdvantageText(netAdvantage)
+            }
+
 
                      ListOfMoves(
                         color = com.example.chessapp.pieces.Color.W,
@@ -83,7 +111,7 @@ fun ListOfMoves(color:com.example.chessapp.pieces.Color,listOfMoves:List<String>
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 70.dp, top = 100.dp, start =  10.dp, end = 10.dp)
+            .padding(bottom = 50.dp, top = 50.dp, start = 10.dp, end = 10.dp)
     ) {
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
@@ -113,3 +141,34 @@ fun ListOfMoves(color:com.example.chessapp.pieces.Color,listOfMoves:List<String>
         }
     }
 }
+
+@Composable
+fun WhiteAdvantageText(netAdvantage:Int){
+    Text(
+        text = "+$netAdvantage",
+        fontSize = 15.sp,
+        color = Color.White,
+        modifier = Modifier.padding(8.dp)
+    )
+}
+
+
+@Composable
+fun BlackAdvantageText(netAdvantage: Int){
+  val  netAdvantageText = -1*netAdvantage
+    Text(
+        text = "+$netAdvantageText",
+        fontSize = 15.sp,
+        color = Color.Black,
+        modifier = Modifier.padding(8.dp)
+    )
+}
+
+// for having a single list of moves and just changing the color we can merge these two lists
+
+//val whiteMoves = remember {
+//    board.getWhiteMovesList()
+//}
+//val blackMoves = remember {
+//    board.getBlackMovesList()
+//}

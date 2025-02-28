@@ -11,6 +11,7 @@ class Rook(
     override var position: IntOffset,
 ) : Piece {
     override val type: PieceType = PieceType.R
+    override val value = 5
 
     override val drawable =
         if (color.isWhite) {
