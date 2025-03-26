@@ -22,12 +22,23 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        create("customDebugType"){
+            isDebuggable = true
+        }
+
+
+        debug{
+            isMinifyEnabled = false
+
+
+        }
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -24,7 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chessapp.board.Board
 import com.example.chessapp.board.InitialEncodedPiecesPosition
+import com.example.chessapp.board.rememberBoard
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -51,17 +53,14 @@ fun GameScreen() {
 
             val whiteAdvantage = remember{board.whiteAdvantage}
 
-            Log.d("whiteAdvantage","${whiteAdvantage.intValue}")
+
 
 
             val blackAdvantage = remember{board.blackAdvantage}
-            Log.d("blackAdvantage","${blackAdvantage.intValue}")
 
 
-            val netAdvantage = whiteAdvantage.intValue - blackAdvantage.intValue
+            val netAdvantage = remember{whiteAdvantage.intValue - blackAdvantage.intValue}
 
-
-//                val boardViewModel = BoardViewModel(board)
                 val whiteMoves = remember {
                     board.getWhiteMovesList()
                 }
@@ -81,8 +80,7 @@ fun GameScreen() {
                 BlackAdvantageText(netAdvantage)
             }
 
-
-                    BoardUI(board, modifier = Modifier)
+            BoardUI(board, modifier = Modifier)
 
             if(netAdvantage>0){
                 WhiteAdvantageText(netAdvantage)
@@ -155,7 +153,7 @@ fun WhiteAdvantageText(netAdvantage:Int){
 
 @Composable
 fun BlackAdvantageText(netAdvantage: Int){
-  val  netAdvantageText = -1*netAdvantage
+    val  netAdvantageText = -1 * netAdvantage
     Text(
         text = "+$netAdvantageText",
         fontSize = 15.sp,
@@ -164,11 +162,3 @@ fun BlackAdvantageText(netAdvantage: Int){
     )
 }
 
-// for having a single list of moves and just changing the color we can merge these two lists
-
-//val whiteMoves = remember {
-//    board.getWhiteMovesList()
-//}
-//val blackMoves = remember {
-//    board.getBlackMovesList()
-//}

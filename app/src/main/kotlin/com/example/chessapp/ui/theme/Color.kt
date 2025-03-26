@@ -1,5 +1,6 @@
 package com.example.chessapp.ui.theme
 
+import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -13,8 +14,9 @@ val Pink40 = Color(0xFF7D5260)
 
 val Red = Color(0xFFFF0000)
 
+@SuppressLint("InvalidColorHexValue")
 val ActiveColor = Color(0xFFB7B61FF)
 
-val DarkColor = Color(0xFFB7C0D8)
+val DarkSquareColor = Color(0xFF779556)
 
 val LightColor = Color(0xFFE8EDF9)

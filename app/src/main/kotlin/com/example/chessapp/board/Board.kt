@@ -1,10 +1,11 @@
 package com.example.chessapp.board
+
 import android.annotation.SuppressLint
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -13,8 +14,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.IntOffset
+import androidx.lifecycle.ViewModel
 import com.example.chessapp.pieces.Bishop
 import com.example.chessapp.pieces.Color
 import com.example.chessapp.pieces.Knight
@@ -67,7 +70,6 @@ class Board(
      private val blackMovesList = mutableStateListOf<String>()
 
 
-
     fun getWhiteMovesList(): List<String> {
         return whiteMovesList
     }
@@ -75,13 +77,9 @@ class Board(
     fun getBlackMovesList(): List<String> {
         return blackMovesList
     }
-
-
-
-
     init {
         _pieces.addAll(
-            decodePieces(encodedPieces = encodedPieces)
+            decodePieces(encodedPieces = encodedPieces) // stores all piece objects in _pieces list
         )
     }
 
@@ -96,8 +94,10 @@ class Board(
 
 
     var isWhiteKingUnderThreat = mutableStateOf(false)
+    private set
 
     var isBlackKingUnderThreat = mutableStateOf(false)
+    private set
 
     // why not to have a boolean variable which board cell can read and decide that if isWhiteKingUnder threat and number of threats are more than two
 
@@ -105,9 +105,9 @@ class Board(
 
 
     var whiteAdvantage: MutableIntState = mutableIntStateOf(0)
-    private set
+        private set
     var blackAdvantage: MutableIntState = mutableIntStateOf(0)
-    private set
+        private set
 
 
 
@@ -125,7 +125,7 @@ class Board(
         }
 
         if (piece == selectedPiece) {
-           // if king is under threat then we don't want to do the calculation again
+            // if king is under threat then we don't want to do the calculation again
             clearSelection()
             return
         }
@@ -135,10 +135,9 @@ class Board(
 
             if(threatToWhiteKing.size > 1) {
 
-                if(piece.type == PieceType.K)
-                {
+                if (piece.type == PieceType.K) {
                     selectedPiece = piece
-                    selectedPieceMoves = piece.getAvailableMoves(piece,pieces)
+                    selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
                     return
                 }
                 else{
@@ -147,6 +146,9 @@ class Board(
 
             } else if(threatToWhiteKing.size == 1){
                 // follow the displacement + attack + pinning
+                // find either safe squares for king
+                // find pieces which can attack the threatening piece
+                // find pieces which can pin themselves to block the threat
                 selectedPiece = piece
                 selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
             }
@@ -172,13 +174,24 @@ class Board(
             }
         }
 
+        // Conditions for en passant we have to see if the selected piece is pawn or not and if it is white
+        // we have to check for it's coordinates it should be on y = 5 if white and y = 4 if it is black
+        // other than that there should be a pawn move before this selection from other side which moved the pawn twice which means th first moves
+        // and that too at either x = x'+1 or x'-1 where x' is the position of selected pawn with a limit of board coordinates
+        // if everything is ok add the last moved pawn which can be captured add the coordinate of next position for selected piece and
+        // and if selected piece moves there remove the last moved pawn which has been captured by the selected piece
+
         else {
             selectedPiece = piece
             selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
         }
     }
-    fun moveSelectedPiece(newX: Int, newY: Int) { // need to pass the current position as well to save it
-        Log.d("Reached 4 ","YES")
+
+    fun moveSelectedPiece(
+        newX: Int,
+        newY: Int
+    ) { // need to pass the current position as well to save it
+        Log.d("Reached 4 ", "YES")
         selectedPiece?.let { piece ->
             if (!isAvailableMove(x = newX, y = newY))
                 return
@@ -210,11 +223,12 @@ class Board(
 
 
     private fun clearSelection() {
-       // make sure that we just remove the UI state not he data
+        // make sure that we just remove the UI state not he data
         selectedPiece = null
         selectedPieceMoves = emptySet()
 
     }
+
     /**
      * Public Methods
      */
@@ -224,7 +238,7 @@ class Board(
 
     fun isAvailableMove(x: Int, y: Int): Boolean {
         return selectedPieceMoves.any { it.x == x && it.y == y }
-    // this function returns true is a cell is available for a piece to move
+        // this function returns true is a cell is available for a piece to move
     }
 
 
@@ -241,23 +255,22 @@ class Board(
         newPosition: IntOffset,
 //        oldPosition:IntOffset
     ) {
-        Log.d("Reached 5 ","YES")
         val targetPiece = pieces.find { it.position == newPosition }
-        var captureMove:Boolean = false
+        var captureMove: Boolean = false
 
 
         if (targetPiece != null) {
             captureMove = true
             // increment the advantage on piece.color
             // basis of piece color we have to assign value to the advantage
-            if(targetPiece.color == Color.W){
-                blackAdvantage.intValue  += when(targetPiece.type){
-                    PieceType.P-> targetPiece.value
+            if (targetPiece.color == Color.W) {
+                blackAdvantage.intValue += when (targetPiece.type) {
+                    PieceType.P -> targetPiece.value
                     PieceType.Q -> targetPiece.value
                     PieceType.R -> targetPiece.value
                     PieceType.B, PieceType.N -> targetPiece.value
 
-                    else->{
+                    else -> {
                         0
                     }
                 }
@@ -280,15 +293,17 @@ class Board(
         }
 
         piece.position = newPosition
-        addMoves(piece, newPosition,captureMove /*,oldPosition*/)
+
 
         if (piece.type == PieceType.P && piece.isEligibleForPromotion()) {
             pawnToPromote = piece
             showPromotionDialog = true
         }
 
-         if(piece.color == Color.W){
-            threatToBlackKing =  threateningPieces(pieces,Color.W)
+        addMoves(piece, newPosition, captureMove, showPromotionDialog /*,oldPosition*/)
+
+        if (piece.color == Color.W) {
+            threatToBlackKing = threateningPieces(pieces, Color.W)
             threatToWhiteKing.clear()
             isWhiteKingUnderThreat.value = false
         }
@@ -310,12 +325,11 @@ class Board(
     }
 
 
-
-     fun promotePawn(pawnToPromote:Piece,pieceType: PieceType){
+    fun promotePawn(pawnToPromote: Piece, pieceType: PieceType) {
 
 // this function will update the advantage on basis of promotedPiece
-         // if pp is white white adv++ else black
-        val selectedPieceType:PieceType = pieceType
+        // if pp is white white adv++ else black
+        val selectedPieceType: PieceType = pieceType
         val promotedPiece = when (selectedPieceType) {
             PieceType.Q -> Queen(pawnToPromote.color, pawnToPromote.position)
             PieceType.R -> Rook(pawnToPromote.color, pawnToPromote.position)
@@ -327,47 +341,52 @@ class Board(
             }
         }
 
-         if(promotedPiece.color == Color.W){
-             whiteAdvantage.intValue += when (promotedPiece.type) {
-                 PieceType.Q -> promotedPiece.value
-                 PieceType.R -> promotedPiece.value
-                 PieceType.B, PieceType.N -> promotedPiece.value
-                 else -> {
-                     0
-                 }
-             }
-         }else if(promotedPiece.color == Color.B){
-             blackAdvantage.intValue  += when(promotedPiece.type){
-                 PieceType.Q -> 9
-                 PieceType.R -> 5
-                 PieceType.B, PieceType.N -> 3
-                 else->{0}
-             }
-         }
+        if (promotedPiece.color == Color.W) {
+            whiteAdvantage.intValue += when (promotedPiece.type) {
+                PieceType.Q -> promotedPiece.value
+                PieceType.R -> promotedPiece.value
+                PieceType.B, PieceType.N -> promotedPiece.value
+                else -> {
+                    0
+                }
+            }
+        } else if (promotedPiece.color == Color.B) {
+            blackAdvantage.intValue += when (promotedPiece.type) {
+                PieceType.Q -> 9
+                PieceType.R -> 5
+                PieceType.B, PieceType.N -> 3
+                else -> {
+                    0
+                }
+            }
+        }
 
         removePiece(pawnToPromote)
         _pieces.add(promotedPiece)
-         showPromotionDialog = false
+        showPromotionDialog = false
 
     }
 
     private fun removePiece(piece: Piece) {
 
-       // if the attacking piece is king and the piece to be removed is protected by any of it's piece then we cannot move the king to that place
+        // if the attacking piece is king and the piece to be removed is protected by any of it's piece then we cannot move the king to that place
         _pieces.remove(piece)
     }
 
 
-    private fun addMoves(piece: Piece, newPosition: IntOffset,captureMove:Boolean/*,oldPosition: IntOffset*/){
+    private fun addMoves(
+        piece: Piece,
+        newPosition: IntOffset,
+        captureMove: Boolean,
+        pawnPromotion: Boolean/*,oldPosition: IntOffset*/
+    ) {
 
 //        When a pawn makes a capture, the file from which the pawn departed is used to identify the pawn. For example, exd5 (pawn on the e-file captures the piece on d5).
-         // for pawn we need to pass the previous position as well
+        // for pawn we need to pass the previous position as well
         val coordinate = getChessCoordinatesFromPosition(newPosition)
 
 
-
-       var  pieceSymbol = when(piece.type)
-        {
+        var pieceSymbol = when (piece.type) {
             PieceType.K -> "K"
             PieceType.P -> ""
             PieceType.N -> "N"
@@ -376,8 +395,12 @@ class Board(
             PieceType.Q -> "Q"
         }
 
-        if(captureMove){
-            pieceSymbol =  pieceSymbol.plus("*")
+        if (pawnPromotion) {
+            pieceSymbol = pieceSymbol.plus("${piece.position.x}")
+            pieceSymbol = pieceSymbol.plus("${piece.position.y}")
+        }
+        if (captureMove) {
+            pieceSymbol = pieceSymbol.plus("*")
         }
 
 
@@ -386,10 +409,9 @@ class Board(
 
 
 
-        if(piece.color == Color.W){
+        if (piece.color == Color.W) {
             whiteMovesList.add(move)
-        }
-        else{
+        } else {
             blackMovesList.add(move)
         }
 
@@ -416,13 +438,23 @@ class Board(
             else -> {"h"}
         }
 
-      coordinates =   xCoordinate.plus(yCoordinate)
+        coordinates = xCoordinate.plus(yCoordinate)
         return coordinates
     }
 
     private fun switchPlayerTurn() {
         playerTurn = if (playerTurn == Color.W) Color.B else Color.W
 
+    }
+
+    private fun isCheckmate():Boolean{
+        val isCheckMate:Boolean = false
+        return isCheckMate
+    }
+
+    private fun isStalemate():Boolean{
+        val isStalemate:Boolean = false
+        return isStalemate
     }
 
     private fun encode(): String {
@@ -432,6 +464,11 @@ class Board(
     companion object {
         const val BoardKeyPrefix = "board_"
     }
+
 }
+
+
+
+
 
 

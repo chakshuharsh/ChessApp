@@ -1,5 +1,7 @@
 package com.example.chessapp.ui.theme
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,10 +28,11 @@ import com.example.chessapp.board.rememberPieceAt
 import com.example.chessapp.pieces.PieceType
 
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun BoardUI(
     board: Board,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     val showPromotionDialog = board.showPromotionDialog
@@ -34,6 +40,7 @@ fun BoardUI(
     val isBlackKingUnderThreat: MutableState<Boolean> = board.isBlackKingUnderThreat
     val isWhiteKingUnderThreat: MutableState<Boolean> = board.isWhiteKingUnderThreat
     val selectedPiece = board.selectedPiece
+
 
 
     Column(
@@ -46,7 +53,7 @@ fun BoardUI(
             )
             .padding(8.dp),
 
-    ) {
+        ) {
 
         BoardYCoordinates
             .forEach { y -> // 1-8
@@ -58,23 +65,25 @@ fun BoardUI(
                     BoardXCoordinates
                         .forEach { x -> // A-H
                             val piece = board.rememberPieceAt(x, y)
-                            val isAvailableMove = remember{mutableStateOf(false)}
+                            val isAvailableMove = remember { mutableStateOf(false) }
 
-                             isAvailableMove.value =
-                                board.rememberIsAvailableMove(x, y)
-                             val backgroundColor =
-                                when {
-                                    piece != null && piece == selectedPiece -> ActiveColor
-                                    (x + y) % 2 == 0 -> DarkColor
+                            isAvailableMove.value = board.rememberIsAvailableMove(x, y)
 
-                                    piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.W && isWhiteKingUnderThreat.value -> Red
-                                    piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.B && isBlackKingUnderThreat.value -> Red
+                            var backgroundColor =
+                                remember(piece, isWhiteKingUnderThreat, isBlackKingUnderThreat) {
+                                    derivedStateOf {
+                                        when {
+                                            piece != null && piece == selectedPiece -> ActiveColor
+                                            piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.W && isWhiteKingUnderThreat.value -> Red
+                                            piece?.type == PieceType.K && piece.color == com.example.chessapp.pieces.Color.B && isBlackKingUnderThreat.value -> Red
 
-
-                                    (x + y) % 2 != 0 -> LightColor
-
-                                    else -> LightColor
+                                            (x + y) % 2 == 0 -> DarkSquareColor
+                                            (x + y) % 2 != 0 -> LightColor
+                                            else -> LightColor
+                                        }
+                                    }
                                 }
+
 
                             val textColor =
                                 when {
@@ -85,23 +94,23 @@ fun BoardUI(
                                         LightColor
 
                                     else ->
-                                        DarkColor
+                                        DarkSquareColor
                                 }
-                                BoardCell(
-                                    piece,
-                                    x,
-                                    y,
-                                    isAvailableMove.value,
-                                    onSelectPiece = { board.selectPiece(it) },
-                                    onMovePiece ={ newX, newY  ->
-                                        board.moveSelectedPiece(newX, newY /*, prevX, prevY*/)
-                                    },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight(),
-                                     backgroundColor,
-                                    textColor
-                                )
+                            BoardCell(
+                                piece,
+                                x,
+                                y,
+                                isAvailableMove.value,
+                                onSelectPiece = { board.selectPiece(it) },
+                                onMovePiece = { newX, newY ->
+                                    board.moveSelectedPiece(newX, newY /*, prevX, prevY*/)
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight(),
+                                backgroundColor.value,
+                                textColor
+                            )
 
                         }
 
@@ -113,15 +122,25 @@ fun BoardUI(
         if (showPromotionDialog && pawnToPromote != null) {
             PawnPromotionDialog(
                 onPieceSelected = { selectedType ->
-                    board.promotePawn(pawnToPromote,selectedType)
+                    board.promotePawn(pawnToPromote, selectedType)
 
                 },
-                onDismissRequest = {  }
+                onDismissRequest = { }
             )
         }
 
 
-
     }
 
+}
+
+// for log statements
+fun getColorName(color: Color): String {
+    return when (color) {
+        Red -> "Red"
+        ActiveColor -> "ActiveColor"
+        DarkSquareColor -> "DarkSquareColor"
+        LightColor -> "LightColor"
+        else -> "Unknown Color: $color"
+    }
 }

@@ -6,7 +6,7 @@ import com.example.chessapp.pieces.Color
 import com.example.chessapp.pieces.Piece
 import com.example.chessapp.pieces.PieceType
 
-
+// this funciton will be a suspend function with and withContext(IO)
 fun threateningPieces(
     pieces: List<Piece>,
     enemyPieceColor:Color // onw which has moves suppose black has moves and there is a threat to white's king
@@ -17,10 +17,11 @@ fun threateningPieces(
     piece.color == enemyPieceColor  && piece.getAvailableMoves(piece,pieces).contains(king?.position)
 }
     // this function here is too heavy I guess  coz it find all the threatening pieces and then call getAvailableMoves for all these pieces ok so may be 4-5 calls max
-        Log.d("enemy pieces","$enemyPieces")
+    Log.d("enemy pieces", "$enemyPieces")
 
     return enemyPieces.toMutableList()
 }
+
 
 
 
