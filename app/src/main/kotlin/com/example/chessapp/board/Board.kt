@@ -137,8 +137,17 @@ class Board(
 
                 if (piece.type == PieceType.K) {
                     selectedPiece = piece
-                    selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
-                    return
+                    // call the safeSquaresForKing function here
+                    selectedPieceMoves = safeSquaresForKing(pieces,piece,piece.getAvailableMoves(piece, pieces))
+
+                    // check whether the selected piece moves contain any square that can be possible next move of the opposite piece
+                    // we will do it by finding all possible moves of other pieces * optimization
+                    // and if those possible move contain the king moves we will remove it from king's selectedPieceMoves
+                    // how we can optimize this function
+                    // by reducing the number of pieces for which we will check the moves if the position of king is far from some pawns there is no need to find moves of those pawns
+                    // same can be applied to knight
+                    // design the unoptimized version and the optimized version and check whether we have any significant improvement or not
+
                 }
                 else{
                     return // a single piece cannot safe the king from double threat
@@ -146,11 +155,13 @@ class Board(
 
             } else if(threatToWhiteKing.size == 1){
                 // follow the displacement + attack + pinning
-                // find either safe squares for king
-                // find pieces which can attack the threatening piece
-                // find pieces which can pin themselves to block the threat
+                // find either safe squares for king -> Same as above big comments
+                // find pieces which can attack the threatening piece -> simple searching the list of pieces
+                // find pieces which can pin themselves to block the threat -> pinning is only possible if the threat is from rook, queen and bishop
                 selectedPiece = piece
                 selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
+                selectedPieceMoves = safeSquaresForKing(pieces,piece,piece.getAvailableMoves(piece, pieces))
+
             }
 
            }
@@ -162,15 +173,15 @@ class Board(
 
                 if (piece.type == PieceType.K) {
                     selectedPiece = piece
-                    selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
-                    return
+                    selectedPieceMoves = safeSquaresForKing(pieces,piece,piece.getAvailableMoves(piece, pieces))
                 } else {
                     return
                 }
             }  else if(threatToBlackKing.size == 1){
                 // follow the displacement + attack + pinning
                 selectedPiece = piece
-                selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
+                selectedPieceMoves = safeSquaresForKing(pieces,piece,piece.getAvailableMoves(piece, pieces))
+
             }
         }
 
@@ -181,9 +192,14 @@ class Board(
         // if everything is ok add the last moved pawn which can be captured add the coordinate of next position for selected piece and
         // and if selected piece moves there remove the last moved pawn which has been captured by the selected piece
 
-        else {
+        else if(piece.type == PieceType.K) {
+            selectedPiece = piece
+            selectedPieceMoves = safeSquaresForKing(pieces,piece,piece.getAvailableMoves(piece, pieces))
+        }
+        else{
             selectedPiece = piece
             selectedPieceMoves = piece.getAvailableMoves(piece, pieces)
+
         }
     }
 

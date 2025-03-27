@@ -6,7 +6,7 @@ import com.example.chessapp.pieces.Color
 import com.example.chessapp.pieces.Piece
 import com.example.chessapp.pieces.PieceType
 
-// this funciton will be a suspend function with and withContext(IO)
+// this function will be a suspend function with and withContext(IO)
 fun threateningPieces(
     pieces: List<Piece>,
     enemyPieceColor:Color // onw which has moves suppose black has moves and there is a threat to white's king
@@ -22,6 +22,31 @@ fun threateningPieces(
     return enemyPieces.toMutableList()
 }
 
+
+fun safeSquaresForKing(pieces:List<Piece>,king:Piece,kingMoves:Set<IntOffset>):Set<IntOffset>{
+
+    // How we can make it main safe -> by using coroutine
+
+    // this function will iterate through the list "pieces" and search for the possible next move of enemy
+    // the color should not be equal to King.color and
+    // for each opposite piece call the getAvailable move
+    // if the coordinates are there in kingMoves already remove them and return the kingMoves
+    // Set difference
+
+    // stop if safeMoves becomes empty
+    var safeMoves = kingMoves.toMutableSet()
+
+    for (piece in pieces) {
+        if (piece.color != king.color) { // Only consider enemy pieces
+            val enemyMoves = piece.getAvailableMoves(piece, pieces)
+            safeMoves.removeAll(enemyMoves) // Remove squares under attack
+        }
+    }
+
+    return safeMoves
+
+
+}
 
 
 
